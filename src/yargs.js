@@ -5,6 +5,7 @@ yargs.option('input', {
     describe: 'Input dataset'
 }).option('output', {
     alias: 'o',
+    describe: 'Output file or stream',
     default: process.stdout
 }).demandOption('i');
 
