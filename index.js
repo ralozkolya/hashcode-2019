@@ -5,12 +5,12 @@ const { sort } = require('./src/sort');
 
 (async () => {
 
-    const data = await read(input);
+  const data = await read(input);
 
-    const slides = getSlides(data.photos);
+  const slides = getSlides(data.photos);
 
-    const links = sort(slides);
+  const links = sort(slides);
 
-    write(output, links);
+  write(output, links);
 
 })();
