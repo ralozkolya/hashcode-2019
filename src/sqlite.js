@@ -1,42 +1,72 @@
-const sqlite = require('sqlite3');
 const Promise = require('bluebird');
-const knex = require('knex')({ client: 'sqlite', useNullAsDefault: true });
 
-let db;
-
-async function getDB(filename = ':memory:') {
-
-  if (db) {
-    return db;
+const { database } = require('./yargs');
+const knex = require('knex')({
+  client: 'sqlite',
+  useNullAsDefault: true,
+  connection: {
+    filename: database
   }
+});
 
-  db = new sqlite.Database(filename);
+async function createSchema() {
 
-  Promise.promisifyAll(db);
-
-  await db.runAsync(knex.schema.createTable('tags', table => {
-    table.increments('id');
-    table.string('tag');
-  }).toString());
-
-  await db.runAsync(knex.schema.createTable('slides', table => {
+  await knex.schema.createTable('slides', table => {
     table.increments('id');
     table.int('index');
-  }).toString());
+  });
 
-  await db.runAsync(knex.schema.createTable('photos', table => {
+  await knex.schema.createTable('photos', table => {
     table.increments('id');
     table.string('orientation', 1);
     table.int('slide');
     table.foreign('slide').references('id').inTable('slides');
-  }).toString());
+  });
 
-  return db;
+  await knex.schema.createTable('tags', table => {
+    table.increments('id');
+    table.string('tag');
+    table.string('photo');
+    table.foreign('photo').references('id').inTable('photos');
+  });
 }
 
 async function populateDB(data) {
+  return runWithRelease(async () => {
+    await createSchema();
+    return Promise.map(data.photos, async ({ id, orientation, tags }, index, length) => {
 
-  const db = await getDB();
+      if (index % 2000 === 0) {
+        console.log(Number((length - index) / length * 100).toFixed(3));
+      }
+
+      await knex('photos').insert({ id,  orientation });
+
+      tags = tags.map(tag => ({ tag, photo: id }));
+      await knex('tags').insert(tags);
+    }, { concurrency: 10 });
+  });
 }
 
-module.exports = { getDB };
+async function runWithRelease(cb) {
+  try {
+    return await cb();
+  } catch (e) {
+    await close();
+    throw e;
+  }
+}
+
+async function getPhotos() {
+  return await knex('photos as p')
+    .select('p.id', 't.tag')
+    .count('p.id as tagCount')
+    .join('tags as t', 't.photo', 'p.id')
+    .groupBy('t.tag');
+}
+
+function close() {
+  return knex.destroy();
+}
+
+module.exports = { populateDB, getPhotos, close, knex };
