@@ -13,13 +13,13 @@ async function createSchema() {
 
   await knex.schema.createTable('slides', table => {
     table.increments('id');
-    table.int('index');
+    table.integer('index');
   });
 
   await knex.schema.createTable('photos', table => {
     table.increments('id');
     table.string('orientation', 1);
-    table.int('slide');
+    table.integer('slide');
     table.foreign('slide').references('id').inTable('slides');
   });
 
@@ -34,7 +34,7 @@ async function createSchema() {
 async function populateDB(data) {
   return runWithRelease(async () => {
     await createSchema();
-    return Promise.map(data.photos, async ({ id, orientation, tags }, index, length) => {
+    return Promise.map(data.photos, async ({ id, orientation, tags }) => {
 
       await knex('photos').insert({ id,  orientation });
 
