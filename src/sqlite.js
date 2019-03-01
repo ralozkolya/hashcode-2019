@@ -36,10 +36,6 @@ async function populateDB(data) {
     await createSchema();
     return Promise.map(data.photos, async ({ id, orientation, tags }, index, length) => {
 
-      if (index % 2000 === 0) {
-        console.log(Number((length - index) / length * 100).toFixed(3));
-      }
-
       await knex('photos').insert({ id,  orientation });
 
       tags = tags.map(tag => ({ tag, photo: id }));
