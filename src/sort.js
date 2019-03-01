@@ -45,12 +45,12 @@ function weigh(){
       let left = tags[i][j];
       for(let k = j + 1; k < tags[i].length; k++){
 
-        // let right = tags[i][k];
-        // let key   = left + "-" + right;
-        // if(!weighs.hasOwnProperty(key)){
-        //     weighs[key] = 0;
-        // }
-        // weighs[key]++;
+        let right = tags[i][k];
+        let key   = left + "-" + right;
+        if(!weighs.hasOwnProperty(key)){
+            weighs[key] = 0;
+        }
+        weighs[key]++;
       }
     }
   }
