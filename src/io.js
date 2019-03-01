@@ -18,7 +18,7 @@ async function read(path, encoding = 'utf8') {
     stream.on('data', line => {
 
       if (!response) {
-        return response = { slideCount: parseInt(line), photos: [] };
+        return response = { photoCount: parseInt(line), photos: [] };
       }
 
       const [ orientation, tagCount, ...tags ] = String(line).split(' ');
