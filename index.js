@@ -6,11 +6,8 @@ const { sort } = require('./src/sort');
 (async () => {
 
   const data = await read(input);
-
   const slides = getSlides(data.photos);
-
   const links = sort(slides);
-
-  write(output, links);
+  await write(output, links);
 
 })();
