@@ -3,9 +3,13 @@ const _ = require('lodash');
 function sort(slides, _maximize = false) {
 
   const push = (i) => {
-    const s2 = slides.splice(i, 1)[0];
-    sorted.push(s2);
-    return s2;
+    const slide = slides.splice(i, 1)[0];
+    if (weigh(sorted[0], slide) <= weigh(sorted[sorted.length - 1], slide)) {
+      sorted.push(slide);
+    } else {
+      sorted.unshift(slide);
+    }
+    return slide;
   };
 
   let target = 0;
