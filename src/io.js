@@ -23,7 +23,7 @@ async function read(path, encoding = 'utf8') {
 
       const [ orientation, tagCount, ...tags ] = String(line).split(' ');
 
-      const slide = { orientation, tagCount, tags, id: id++ };
+      const slide = { orientation, tagCount: parseInt(tagCount), tags, id: id++ };
 
       response.photos.push(slide);
     });

@@ -23,50 +23,25 @@ function getSlides(photos) {
 function matchVertical(photos) {
 
   const slides = [];
-  const usedIds = [];
 
-  const pushSlide = (p1, p2) => {
-
-    if (usedIds.includes(p1.id) || usedIds.includes(p2.id)) {
-      return;
-    }
-
+  const pushPair = (p1, i) => {
+    const p2 = photos.splice(i, 1)[0];
     slides.push(getSlide(p1, p2));
-    usedIds.push(p1.id, p2.id);
   };
 
-  if (photos.length > 1000) {
-    const chunked = _.chunk(photos, 2);
-    chunked.forEach(( [ p1, p2 ] )=> {
-      pushSlide(p1, p2);
-    });
-    return slides;
-  }
-
-  for (let i = photos.length - 1; i > 0; i--) {
-
-    const p1 = photos[i];
-    let min = Infinity;
-    let pair;
-
-    for (let j = i - 1; j >= 0; j--) {
-
-      const p2 = photos[j];
+  let p1;
+  outer: while (p1 = photos.pop()) {
+    for (let i = photos.length - 1; i >= 0; i--) {
+      const p2 = photos[i];
       const diff = p1.tags.length + p2.tags.length - _.union(p1.tags, p2.tags).length;
-      if (!diff) {
-        pushSlide(p1, p2);
-        continue;
+
+      if (diff < 1) {
+        pushPair(p1, i);
+        continue outer;
       }
 
-      if (diff < min) {
-        min = diff;
-        pair = { p1, p2 };
-      }
     }
-
-    if (pair) {
-      pushSlide(pair.p1, pair.p2);
-    }
+    pushPair(p1, 0);
   }
 
   return slides;
