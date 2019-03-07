@@ -37,17 +37,19 @@ function write(destination, slides) {
     destination = fs.createWriteStream(destination);
   }
 
-  let output = '';
-  output = addLine(output, slides.length);
-  slides.forEach(slide => {
-    output = addLine(output, slide.photos.map(p => p.id).join(' '));
+  return new Promise((resolve, reject) => {
+
+    destination.on('error', reject);
+
+    destination.write(slides.length + '\n');
+
+    slides.forEach(slide => {
+      destination.write(slide.photos.map(p => p.id).join(' ') + '\n');
+    });
+
+    destination.end(resolve);
+
   });
-
-  destination.write(String(output));
-}
-
-function addLine(original, line) {
-  return String(original) + String(line) + '\n';
 }
 
 module.exports = { read, write };
