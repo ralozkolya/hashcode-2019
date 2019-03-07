@@ -1,4 +1,4 @@
-const { input, output } = require('./src/yargs');
+const { input, output, maximize } = require('./src/yargs');
 const { read, write } = require('./src/io');
 const { getSlides } = require('./src/process');
 const { sort } = require('./src/sort');
@@ -7,7 +7,7 @@ const { sort } = require('./src/sort');
 
   const data = await read(input);
   const slides = getSlides(data.photos);
-  const links = sort(slides);
-  await write(output, links);
+  const sorted = sort(slides, maximize);
+  await write(output, sorted);
 
 })();
