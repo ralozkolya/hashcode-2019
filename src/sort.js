@@ -21,7 +21,13 @@ function sort(slides, _maximize = false) {
   let s1 = slides.pop();
   const sorted = [ s1 ];
 
+  const l = slides.length;
+
   outer: while (slides.length) {
+
+    if (slides.length % 100 === 0) {
+      console.log(`${ Number(100 - slides.length / l * 100).toFixed(2) }% paired`);
+    }
 
     let max = 0;
 
